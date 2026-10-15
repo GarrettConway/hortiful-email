@@ -23,7 +23,7 @@
   <FormSettings>
     <Form xsi:type="ItemRead">
       <DesktopSettings>
-        <SourceLocation DefaultValue="https://localhost:3000/taskpane.html"/>
+        <SourceLocation DefaultValue="https://localhost:3000/commands.html"/>
         <RequestedHeight>250</RequestedHeight>
       </DesktopSettings>
     </Form>
@@ -59,21 +59,6 @@
 			<OfficeTab id="TabDefault">
 			  <Group id="msgComposeGroup">
 				<Label resid="GroupLabel" />
-				<Control xsi:type="Button" id="msgComposeOpenPaneButton">
-				  <Label resid="TaskpaneButton.Label" />
-				  <Supertip>
-					<Title resid="TaskpaneButton.Label" />
-					<Description resid="TaskpaneButton.Tooltip" />
-				  </Supertip>
-				  <Icon>
-					<bt:Image size="16" resid="Icon.16x16" />
-					<bt:Image size="32" resid="Icon.32x32" />
-					<bt:Image size="80" resid="Icon.80x80" />
-				  </Icon>
-				  <Action xsi:type="ShowTaskpane">
-					<SourceLocation resid="Taskpane.Url" />
-				  </Action>
-				</Control>
 				<Control xsi:type="Button" id="ActionButton">
 				  <Label resid="ActionButton.Label"/>
 				  <Supertip>
@@ -111,18 +96,15 @@
 	  </bt:Images>
 	  <bt:Urls>
 		<bt:Url id="Commands.Url" DefaultValue="https://localhost:3000/commands.html" />
-		<bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html" />
 		<bt:Url id="WebViewRuntime.Url" DefaultValue="https://localhost:3000/commands.html" />
 		<!-- Entry needed for classic Outlook on Windows. -->
 		<bt:Url id="JSRuntime.Url" DefaultValue="https://localhost:3000/launchevent.js" />
 	  </bt:Urls>
 	  <bt:ShortStrings>
 		<bt:String id="GroupLabel" DefaultValue="Contoso Add-in"/>
-		<bt:String id="TaskpaneButton.Label" DefaultValue="Show Taskpane"/>
 		<bt:String id="ActionButton.Label" DefaultValue="Perform an action"/>
 	  </bt:ShortStrings>
 	  <bt:LongStrings>
-		<bt:String id="TaskpaneButton.Tooltip" DefaultValue="Opens a pane to provide additional functionality or information."/>
 		<bt:String id="ActionButton.Tooltip" DefaultValue="Perform an action when clicked."/>
 	  </bt:LongStrings>
 	</Resources>
