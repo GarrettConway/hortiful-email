@@ -18,7 +18,6 @@ module.exports = async (env, options) => {
     devtool: "source-map",
     entry: {
       polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
-      commands: "./src/commands/commands.js",
     },
     output: {
       clean: true,
@@ -80,7 +79,7 @@ module.exports = async (env, options) => {
       new HtmlWebpackPlugin({
         filename: "commands.html",
         template: "./src/commands/commands.html",
-        chunks: ["polyfill", "commands"],
+        chunks: ["polyfill"],
       }),
     ],
     devServer: {
