@@ -77,8 +77,8 @@ module.exports = async (env, options) => {
         ],
       }),
       new HtmlWebpackPlugin({
-        filename: "commands.html",
-        template: "./src/commands/commands.html",
+        filename: "launchevent.html",
+        template: "./src/launchevent/launchevent.html",
         chunks: ["polyfill"],
       }),
     ],

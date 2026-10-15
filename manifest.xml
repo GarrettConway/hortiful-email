@@ -23,7 +23,7 @@
   <FormSettings>
     <Form xsi:type="ItemRead">
       <DesktopSettings>
-        <SourceLocation DefaultValue="https://localhost:3000/commands.html"/>
+        <SourceLocation DefaultValue="https://localhost:3000/launchevent.html"/>
         <RequestedHeight>250</RequestedHeight>
       </DesktopSettings>
     </Form>
@@ -54,7 +54,7 @@
 		</Runtimes>
 		<DesktopFormFactor>
 		  <!-- Configure other command surface extension points for add-in command support, if needed. -->
-		  <FunctionFile resid="Commands.Url" />
+		  <FunctionFile resid="WebViewRuntime.Url" />
 		  <!-- Enable launching the add-in on the included event. -->
 		  <ExtensionPoint xsi:type="LaunchEvent">
 			<LaunchEvents>
@@ -68,8 +68,7 @@
 	</Hosts>
 	<Resources>
 	  <bt:Urls>
-		<bt:Url id="Commands.Url" DefaultValue="https://localhost:3000/commands.html" />
-		<bt:Url id="WebViewRuntime.Url" DefaultValue="https://localhost:3000/commands.html" />
+		<bt:Url id="WebViewRuntime.Url" DefaultValue="https://localhost:3000/launchevent.html" />
 		<!-- Entry needed for classic Outlook on Windows. -->
 		<bt:Url id="JSRuntime.Url" DefaultValue="https://localhost:3000/launchevent.js" />
 	  </bt:Urls>
