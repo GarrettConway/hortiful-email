@@ -1,80 +1,70 @@
+/**
+ * Runs when the user clicks Send (registered as OnMessageSend in manifest.xml).
+ * Collects the email domain of every recipient in To, CC and BCC. If they
+ * don't all share one domain, it shows a warning before the message goes out.
+ */
 function onMessageSendHandler(event) {
-  //Office.context.mailbox.item.body.getAsync(
-  //  "text",
-  //  { asyncContext: event },
-  //  getBodyCallback
-  //);
-  console.log("testing 1. 2.. 3...");
-  event.completed({allowEvent: true});
+  console.log("testing code triggered");
+  var item = Office.context.mailbox.item;
+  var fields = [item.to, item.cc, item.bcc];
+
+  // Used as a set: each unique domain becomes a key, e.g. { "testing.com": true }.
+  var domains = {};
+
+  // getAsync is asynchronous, so count down as each field's callback returns.
+  // When the count hits zero, all three fields have been read.
+  var pending = fields.length;
+  var failed = false;
+
+  fields.forEach(function (field) {
+    // Pass the event along via asyncContext so the callback can finish it.
+    field.getAsync({ asyncContext: event }, function (result) {
+      if (result.status === Office.AsyncResultStatus.Failed) {
+        failed = true;
+      } else {
+        result.value.forEach(function (recipient) {
+          // Take everything after the last "@" as the domain. Lowercase it so
+          // "Testing.com" and "testing.com" count as the same domain.
+          // Recipients with no "@" (e.g. some contact groups) are skipped.
+          var address = recipient.emailAddress || "";
+          var at = address.lastIndexOf("@");
+          if (at > -1) domains[address.slice(at + 1).toLowerCase()] = true;
+        });
+      }
+
+      // Last field to finish: all recipients are collected, so decide.
+      if (--pending === 0) finish(result.asyncContext, Object.keys(domains), failed);
+    });
+  });
 }
 
-function getBodyCallback(asyncResult){
-  const event = asyncResult.asyncContext;
-  let body = "";
-  if (asyncResult.status !== Office.AsyncResultStatus.Failed && asyncResult.value !== undefined) {
-    body = asyncResult.value;
-  } else {
-    const message = "Failed to get body text";
-    console.error(message);
-    event.completed({ allowEvent: false, errorMessage: message });
+/**
+ * Tells Outlook whether to send the message.
+ * event.completed must be called exactly once on every path. Otherwise Outlook
+ * waits on the add-in and eventually times out.
+ */
+function finish(event, domainList, failed) {
+  // If any recipient field couldn't be read, stop the send rather than guess.
+  if (failed) {
+    event.completed({ allowEvent: false, errorMessage: "Couldn't read the recipients." });
     return;
   }
 
-  const matches = hasMatches(body);
-  if (matches) {
-    Office.context.mailbox.item.getAttachmentsAsync(
-      { asyncContext: event },
-      getAttachmentsCallback);
-  } else {
+  // Zero or one domain: nothing to warn about, so let the message go.
+  if (domainList.length <= 1) {
     event.completed({ allowEvent: true });
-  }
-}
-
-function hasMatches(body) {
-  if (body == null || body == "") {
-    return false;
+    return;
   }
 
-  const arrayOfTerms = ["send", "picture", "document", "attachment"];
-  for (let index = 0; index < arrayOfTerms.length; index++) {
-    const term = arrayOfTerms[index].trim();
-    const regex = RegExp(term, 'i');
-    if (regex.test(body)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-function getAttachmentsCallback(asyncResult) {
-  const event = asyncResult.asyncContext;
-  if (asyncResult.value.length > 0) {
-    for (let i = 0; i < asyncResult.value.length; i++) {
-      if (asyncResult.value[i].isInline == false) {
-        event.completed({ allowEvent: true });
-        return;
-      }
-    }
-
-    event.completed({
-      allowEvent: false,
-      errorMessage: "Looks like the body of your message includes an image or an inline file. Attach a copy to the message before sending.",
-      // TIP: In addition to the formatted message, it's recommended to also set a
-      // plain text message in the errorMessage property for compatibility on
-      // older versions of Outlook clients.
-      errorMessageMarkdown: "Looks like the body of your message includes an image or an inline file. Attach a copy to the message before sending.\n\n**Tip**: For guidance on how to attach a file, see [Attach files in Outlook](https://www.contoso.com/help/attach-files-in-outlook)."
-    });
-  } else {
-    event.completed({
-      allowEvent: false,
-      errorMessage: "Looks like you're forgetting to include an attachment.",
-      // TIP: In addition to the formatted message, it's recommended to also set a
-      // plain text message in the errorMessage property for compatibility on
-      // older versions of Outlook clients.
-      errorMessageMarkdown: "Looks like you're forgetting to include an attachment.\n\n**Tip**: For guidance on how to attach a file, see [Attach files in Outlook](https://www.contoso.com/help/attach-files-in-outlook)."
-    });
-  }
+  // More than one domain: show the Smart Alerts dialog with the list.
+  // PromptUser adds a "Send Anyway" button, so this is a warning the user
+  // can override rather than a hard block.
+  var msg = "Recipients span " + domainList.length + " domains: " + domainList.join(", ") + ".";
+  event.completed({
+    allowEvent: false,
+    errorMessage: msg,
+    sendModeOverride: Office.MailboxEnums.SendModeOverride.PromptUser
+  });
 }
 
 // IMPORTANT: To ensure your add-in is supported in Outlook, remember to map the event handler name specified in the manifest to its JavaScript counterpart.
