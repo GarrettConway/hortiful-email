@@ -28,7 +28,8 @@
       </DesktopSettings>
     </Form>
   </FormSettings>
-  <Permissions>ReadWriteItem</Permissions>
+  <!-- Only reads recipients (to/cc/bcc.getAsync), so read access is enough. -->
+  <Permissions>ReadItem</Permissions>
   <Rule xsi:type="RuleCollection" Mode="Or">
     <Rule xsi:type="ItemIs" ItemType="Message" FormType="Read"/>
   </Rule>
@@ -59,7 +60,9 @@
 		  <!-- Enable launching the add-in on the included event. -->
 		  <ExtensionPoint xsi:type="LaunchEvent">
 			<LaunchEvents>
-			  <LaunchEvent Type="OnMessageSend" FunctionName="onMessageSendHandler" SendMode="SoftBlock" />
+			  <!-- PromptUser: if the check is slow, times out or can't run, users still
+				   get "Send Anyway". This is a warning, not a compliance block. -->
+			  <LaunchEvent Type="OnMessageSend" FunctionName="onMessageSendHandler" SendMode="PromptUser" />
 			</LaunchEvents>
 			<!-- Identifies the runtime to be used. The resid value must match that of the Runtime element that represents the browser runtime. -->
 			<SourceLocation resid="WebViewRuntime.Url"/>
