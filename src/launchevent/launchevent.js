@@ -2,6 +2,10 @@
 // since collected domains are lowercased before comparison.
 var DOMAIN_IGNORE_LIST = ["hortiful.com"];
 
+// Longest warning to show before falling back to just the domain count. Smart
+// Alerts allows up to 500 characters (see errorMessage docs); 300 leaves room.
+var MAX_MESSAGE_LENGTH = 300;
+
 /**
  * Runs when the user clicks Send (registered as OnMessageSend in manifest.xml).
  * Collects the email domain of every recipient in To, CC and BCC, then drops
@@ -72,7 +76,14 @@ function finish(event, domainList, failed) {
   // More than one domain: show the Smart Alerts dialog with the list.
   // PromptUser adds a "Send Anyway" button, so this is a warning the user
   // can override rather than a hard block.
-  var msg = "Recipients span " + domainList.length + " domains: " + domainList.join(", ") + ".";
+  var summary = "Recipients span " + domainList.length + " domains";
+  var question = " Are you sure you want to send?";
+  var msg = summary + ": " + domainList.join(", ") + "." + question;
+
+  // Too long to list every domain: fall back to just the count.
+  if (msg.length > MAX_MESSAGE_LENGTH) {
+    msg = summary + "." + question;
+  }
   event.completed({
     allowEvent: false,
     errorMessage: msg,

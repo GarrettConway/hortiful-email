@@ -37,7 +37,8 @@
   <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides" xsi:type="VersionOverridesV1_0">
   <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides/1.1" xsi:type="VersionOverridesV1_1">
 	<Requirements>
-	  <bt:Sets DefaultMinVersion="1.15">
+	  <!-- 1.14 is the earliest set with sendModeOverride (PromptUser). -->
+	  <bt:Sets DefaultMinVersion="1.14">
 		<bt:Set Name="Mailbox" />
 	  </bt:Sets>
 	</Requirements>
