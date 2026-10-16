@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const urlDev = "https://localhost:3000/";
-const urlProd = "https://www.hortiful.com/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
+const urlProd = "https://garrettconway.github.io/hortiful-email/"; // GitHub Pages project site
 
 async function getHttpsOptions() {
   const httpsOptions = await devCerts.getHttpsServerOptions();
