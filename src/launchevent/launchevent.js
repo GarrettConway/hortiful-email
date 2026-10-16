@@ -1,10 +1,14 @@
+// Domains that never count toward the warning (e.g. our own). Keep lowercase,
+// since collected domains are lowercased before comparison.
+var DOMAIN_IGNORE_LIST = ["hortiful.com"];
+
 /**
  * Runs when the user clicks Send (registered as OnMessageSend in manifest.xml).
- * Collects the email domain of every recipient in To, CC and BCC. If they
- * don't all share one domain, it shows a warning before the message goes out.
+ * Collects the email domain of every recipient in To, CC and BCC, then drops
+ * any in DOMAIN_IGNORE_LIST. If the remaining recipients don't all share one
+ * domain, it shows a warning before the message goes out.
  */
 function onMessageSendHandler(event) {
-  console.log("testing code triggered");
   var item = Office.context.mailbox.item;
   var fields = [item.to, item.cc, item.bcc];
 
@@ -32,8 +36,13 @@ function onMessageSendHandler(event) {
         });
       }
 
-      // Last field to finish: all recipients are collected, so decide.
-      if (--pending === 0) finish(result.asyncContext, Object.keys(domains), failed);
+      // Last field to finish: all recipients are collected, so filter and decide.
+      if (--pending === 0) {
+        DOMAIN_IGNORE_LIST.forEach(function (domain) {
+          delete domains[domain];
+        });
+        finish(result.asyncContext, Object.keys(domains), failed);
+      }
     });
   });
 }
@@ -44,7 +53,7 @@ function onMessageSendHandler(event) {
  * waits on the add-in and eventually times out.
  */
 function finish(event, domainList, failed) {
-  // If any recipient field couldn't be read, stop the send rather than guess.
+  // If any recipient field couldn't be read, prompt the user rather than guess.
   if (failed) {
     event.completed({
       allowEvent: false,
