@@ -58,7 +58,7 @@ function finish(event, domainList, failed) {
     event.completed({
       allowEvent: false,
       errorMessage: "Couldn't read the recipients.",
-      sendModeOverride: Office.MailboxEnums.SendModeOverride.PromptUser
+      sendModeOverride: Office.MailboxEnums.SendModeOverride.PromptUser,
     });
     return;
   }
@@ -76,7 +76,7 @@ function finish(event, domainList, failed) {
   event.completed({
     allowEvent: false,
     errorMessage: msg,
-    sendModeOverride: Office.MailboxEnums.SendModeOverride.PromptUser
+    sendModeOverride: Office.MailboxEnums.SendModeOverride.PromptUser,
   });
 }
 
