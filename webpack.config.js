@@ -37,7 +37,10 @@ module.exports = async (env, options) => {
         {
           test: /\.html$/,
           exclude: /node_modules/,
-          use: "html-loader",
+          // Leave src attributes alone: launchevent.js is already copied to the
+          // root, and letting html-loader emit a hashed copy breaks in production
+          // (minification renames the file after the HTML has been written).
+          use: { loader: "html-loader", options: { sources: false } },
         },
         {
           test: /\.(png|jpg|jpeg|gif|ico)$/,
